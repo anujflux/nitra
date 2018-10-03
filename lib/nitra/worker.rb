@@ -31,6 +31,7 @@ module Nitra
       class RetryException < Exception; end
 
 
+
       attr_reader :runner_id, :worker_number, :configuration, :channel, :io
 
       def initialize(runner_id, worker_number, configuration)
@@ -234,6 +235,8 @@ module Nitra
           "on"        => on,
         })
         retry
+
+
 
       rescue LoadError, Exception => e
         io << "Exception when running #{filename}: #{e.message}\n#{e.backtrace[0..7].join("\n")}"
