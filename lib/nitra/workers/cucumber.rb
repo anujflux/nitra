@@ -11,6 +11,7 @@ module Nitra::Workers
     def load_environment
       require 'cucumber'
       require 'nitra/ext/cucumber'
+      require 'nitra/ext/flakytests'
     end
 
     def minimal_file
@@ -34,6 +35,10 @@ module Nitra::Workers
       args << '--no-color'
       args << '--require'
       args << 'features'
+      args << '--format'
+      args << 'FlakyTests::FlakyTestsTracker'
+      args << '--out'
+      args << '/dev/null'
 
       if configuration.split_files && !preloading && !filename.include?(':')
         args << '--dry-run'
@@ -63,7 +68,7 @@ module Nitra::Workers
         args << filename
 
         run_with_arguments(args)
-
+        
         if cuke_runtime.failure? && @configuration.exceptions_to_retry && @attempt && @attempt < @configuration.max_attempts &&
            cuke_runtime.results.scenarios(:failed).any? {|scenario| scenario.exception.to_s =~ @configuration.exceptions_to_retry || scenario.exception.class.to_s =~ @configuration.exceptions_to_retry}
           raise RetryException
